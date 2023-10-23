@@ -1,9 +1,12 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class TargetCube : Target
 {
+    bool left;
     bool rotationOn = false;
-    float rotationAmount = 360f;
+    float rotationLeft = 360f;
+    float rotationRight = -360;
     float currentRotationAmount = 0f;
 
     Vector3 rotation;
@@ -14,27 +17,54 @@ public class TargetCube : Target
     {
         if (rotationOn)
         {
-            if (currentRotationAmount < rotationAmount)
+            if(left)
             {
-                time = Time.deltaTime;
-                target.transform.Rotate(rotation * time);
-                currentRotationAmount += rotationAmount * time;
+                if (currentRotationAmount < rotationLeft)
+                {
+                    time = Time.deltaTime;
+                    target.transform.Rotate(rotation * time);
+                    currentRotationAmount += rotationLeft * time;
+                }
+                else
+                {
+                    rotationOn = false;
+                    target.transform.rotation = Quaternion.Euler(0, 0, 0);
+                }
             }
             else
             {
-                rotationOn = false;
-                target.transform.rotation = Quaternion.Euler(0, 0, 0);
+                Debug.Log("Current Rotation: " + currentRotationAmount);
+                if (-currentRotationAmount > rotationRight)
+                {
+                    time = Time.deltaTime;
+                    target.transform.Rotate(rotation * time);
+                    currentRotationAmount -= rotationRight * time;
+                }
+                else
+                {
+                    rotationOn = false;
+                    target.transform.rotation = Quaternion.Euler(0, 0, 0);
+                }
             }
         }
 
     }
-    
+
     void Rotate(float degrees)
     {
         if (!rotationOn)
         {
+            if (degrees > 0)
+            {
+                left = true;
+                rotationLeft = degrees;
+            }
+            else 
+            {
+                left = false;
+                rotationRight = degrees;
+            }
             rotationOn = true;
-            rotationAmount = degrees;
             currentRotationAmount = 0f;
             rotation = new Vector3(0, degrees, 0);
         }
@@ -44,10 +74,24 @@ public class TargetCube : Target
     {
         if (gameObject.tag == "Target")
         {
-            Rotate(rotationAmount);
+            // Determine the hit side based on the hit point
+            Vector3 hitDirection = hit.point - target.transform.position;
+            float dotProduct = Vector3.Dot(hitDirection, target.transform.right);
+
+            Debug.Log("Hit, " + dotProduct);
+
+            if (dotProduct > 0)
+            {
+                // Hit on the right side, rotate right
+                Rotate(rotationRight);
+            }
+            else
+            {
+                // Hit on the left side, rotate left
+                Rotate(rotationLeft);
+            }
         }
 
         effectScript.Play(hit, hitSound, hitEffect, effectDuration);
     }
-
 }
