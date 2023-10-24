@@ -8,6 +8,10 @@ public class Gun : MonoBehaviour
 
     public ParticleSystem muzzleFlash;
 
+    public Vector3 upRecoil;
+
+    Vector3 originalRotation;
+
     private Camera fpsCamera;
     private float nextTimeToFire;
 
@@ -15,6 +19,7 @@ public class Gun : MonoBehaviour
     {
         fpsCamera = GameObject.Find("FirstPersonCharacter").GetComponent<Camera>();
         nextTimeToFire = 0.0f;
+        originalRotation = transform.localEulerAngles;
     }
 
 
@@ -25,6 +30,10 @@ public class Gun : MonoBehaviour
         if (ready && Input.GetButtonDown("Fire1")) 
         {
             Shoot();
+        }
+        else if (Input.GetButtonUp("Fire1"))
+        {
+            stopRecoil();
         }
     }
 
@@ -47,5 +56,16 @@ public class Gun : MonoBehaviour
 
             nextTimeToFire = Time.time + 1f;
         }
+
+        Recoil();
+    }
+
+    void Recoil()
+    {
+        transform.localEulerAngles += upRecoil;
+    }
+    void stopRecoil()
+    {
+        transform.localEulerAngles = originalRotation;
     }
 }
