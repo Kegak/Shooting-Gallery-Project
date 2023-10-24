@@ -11,9 +11,16 @@ public class TargetCircle : Target
     float swingBottom = -360f;
     float currentRotationAmount = 0f;
 
+    Quaternion targetRotation;
+
     Vector3 rotation;
 
     float time;
+
+    void Start() 
+    {
+        targetRotation = target.transform.rotation;
+    }
 
     void Update()
     {
@@ -30,7 +37,7 @@ public class TargetCircle : Target
                 else
                 {
                     rotationOn = false;
-                    target.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    target.transform.rotation = targetRotation;
                 }
             }
             else
@@ -45,7 +52,7 @@ public class TargetCircle : Target
                 else
                 {
                     rotationOn = false;
-                    target.transform.rotation = Quaternion.Euler(0, 0, 0);
+                    target.transform.rotation = targetRotation;
                 }
             }
         }
