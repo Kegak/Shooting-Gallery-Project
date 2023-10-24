@@ -8,7 +8,7 @@ public class Gun : MonoBehaviour
 
     public ParticleSystem muzzleFlash;
 
-    public Vector3 upRecoil;
+    public Vector3 upRecoil = new Vector3(-20, 10, 0);
 
     Vector3 originalRotation;
 
